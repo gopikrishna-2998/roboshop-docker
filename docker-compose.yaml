@@ -5,6 +5,8 @@ services:
   catalouge:
     image: catalouge:v1
     container_name: catalouge
+    depends_on:
+      - mondodb
 
 networks:
   default:
