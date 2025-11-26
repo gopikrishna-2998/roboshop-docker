@@ -2,6 +2,9 @@ services:
   mondodb:
     image: mongodb:v1
     container_name: mongodb
+  catalouge:
+    image: catalouge:v1
+    container_name: catalouge
 
 networks:
   default:
