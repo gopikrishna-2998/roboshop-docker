@@ -2,14 +2,77 @@ services:
   mondodb:
     image: mongodb:v1
     container_name: mongodb
+    volumes:
+      - mongodata:/data/db
   catalouge:
     image: catalouge:v1
     container_name: catalouge
     depends_on:
       - mondodb
+  redis:
+    image: redis:v1
+    container_name: redis
+    volumes:
+      - redisdata:/data
+  mysql:
+    image: mysql:v1
+    container_name: mysql
+    volumes:
+      - mysqldata:/var/lib/mysql
+  rabbitmq:
+    image: rabbitmq:v1
+    container_name: rabbitmq
+    volumes:
+      - rabbitmqdata:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: roboshop
+      RABBITMQ_DEFAULT_PASS: roboshop123
+  user:
+    image: user:v1
+    container_name: user
+    volumes:
+      - userdata:/data
+    depends_on:
+      - mondodb
+      - redis
+  cart:
+    image: cart:v1  
+    container_name: cart
+    depends_on:
+      - redis
+      - catalouge
+  shipping:
+    image: shipping:v1
+    container_name: shipping
+    depends_on:
+      - mysql
+      - cart
+  payment:
+    image: payment:v1 
+    container_name: payment
+    depends_on:
+      - rabbitmq
+      - cart
+      - user
+  frontend:
+    image: frontend:v1
+    container_name: frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - user
+      - cart
+      - shipping
+      - payment
+      - catalouge
 
 networks:
   default:
     driver: bridge
     name: roboshop
     external: true
+volumes:
+  mongodb:  
+  redis:
+  mysql:
+  rabbitmq:
